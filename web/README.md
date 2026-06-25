@@ -1,18 +1,130 @@
-# React + Vite
+# Garment Bundle Tracking System
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+> Production-oriented garment bundle tracking system built using React.js, React Native (Expo), Node.js, Express.js, and MongoDB.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Tech Stack
 
-## React Compiler
+### Frontend
+- **React.js**
+- **Vite**
+- **JavaScript**
+- **Tailwind CSS**
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+### Mobile
+- **React Native**
+- **Expo**
+- **SQLite**
 
-Note: This will impact Vite dev & build performances.
+### Backend
+- **Node.js**
+- **Express.js**
 
-## Expanding the Oxlint configuration
+### Database
+- **MongoDB Atlas**
+- **Mongoose**
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+---
+
+## Project Structure
+
+```text
+garment-bundle-tracking/
+│
+├── web/
+├── server/
+├── mobile/
+├── docs/
+└── README.md
+```
+
+---
+
+## Setup & Installation
+
+### Backend
+
+Navigate to the backend folder.
+
+```bash
+cd server
+```
+
+Install dependencies.
+
+```bash
+npm install
+```
+
+Create a `.env` file.
+
+```env
+PORT=5000
+
+MONGO_URI=your_mongodb_connection_string
+
+JWT_SECRET=your_secret_key
+```
+
+Start the backend server.
+
+```bash
+npm run dev
+```
+
+---
+
+### Frontend
+
+Navigate to the frontend folder.
+
+```bash
+cd web
+```
+
+Install dependencies.
+
+```bash
+npm install
+```
+
+Create a `.env` file.
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+Start the frontend.
+
+```bash
+npm run dev
+```
+
+---
+
+### Mobile
+
+Navigate to the mobile folder.
+
+```bash
+cd mobile
+```
+
+Install dependencies.
+
+```bash
+npm install
+```
+
+Start Expo.
+
+```bash
+npx expo start
+```
+
+---
+
+## Documentation
+
+Detailed architecture and design documents are available inside the `docs` folder.
