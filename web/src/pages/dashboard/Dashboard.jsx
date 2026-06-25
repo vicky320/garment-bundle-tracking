@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext.jsx';
 import {
     Box,
@@ -6,6 +7,8 @@ import {
     Card,
     CardContent,
     Grid,
+    Stack,
+    TextField,
     Typography,
     Table,
     TableBody,
@@ -17,13 +20,14 @@ import {
     Alert,
     CircularProgress,
 } from '@mui/material';
-import { fetchBundles, advanceBundleStage } from '../../services/bundle.service.js';
+import { fetchBundles, getBundleByCode, advanceBundleStage } from '../../services/bundle.service.js';
 import { fetchStyles } from '../../services/style.service.js';
 import { fetchStock } from '../../services/stock.service.js';
 
 const stagingLabels = ['Cutting', 'Stitching', 'Finishing', 'Packing', 'Factory Store', 'Dispatch'];
 
 export default function Dashboard() {
+    const navigate = useNavigate();
     const { user } = useContext(AuthContext);
     const [bundles, setBundles] = useState([]);
     const [stockRows, setStockRows] = useState([]);
@@ -31,8 +35,17 @@ export default function Dashboard() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [busyBundle, setBusyBundle] = useState(null);
+    const [bundleCode, setBundleCode] = useState('');
+    const [scanLoading, setScanLoading] = useState(false);
+    const [scanMessage, setScanMessage] = useState('');
+    const [scanError, setScanError] = useState('');
 
     useEffect(() => {
+        if (user?.role === 'operator') {
+            navigate('/operator', { replace: true });
+            return;
+        }
+
         async function loadData() {
             try {
                 const [bundleData, styleData, stockData] = await Promise.all([
@@ -51,7 +64,7 @@ export default function Dashboard() {
         }
 
         loadData();
-    }, []);
+    }, [user, navigate]);
 
     const counts = stagingLabels.map((stage) => ({
         label: stage,
@@ -67,6 +80,32 @@ export default function Dashboard() {
             setError(err?.response?.data?.message || 'Unable to dispatch bundle');
         } finally {
             setBusyBundle(null);
+        }
+    };
+
+    const handleOperatorScan = async () => {
+        setScanError('');
+        setScanMessage('');
+        if (!bundleCode.trim()) {
+            setScanError('Enter a bundle code first');
+            return;
+        }
+
+        setScanLoading(true);
+        try {
+            const bundle = await getBundleByCode(bundleCode.trim());
+            const updatedBundle = await advanceBundleStage(bundle._id);
+            setBundles((prev) => prev.map((item) => (item._id === updatedBundle._id ? updatedBundle : item)));
+            setScanMessage(`Bundle ${updatedBundle.bundleCode} advanced to ${updatedBundle.currentStage}`);
+            setBundleCode('');
+        } catch (err) {
+            if (err?.response?.status === 404) {
+                setScanError('Bundle not found. Please verify the code.');
+            } else {
+                setScanError(err?.response?.data?.message || 'Failed to advance bundle.');
+            }
+        } finally {
+            setScanLoading(false);
         }
     };
 
@@ -101,6 +140,35 @@ export default function Dashboard() {
                     </Grid>
 
                     <Grid container spacing={3}>
+                        {user?.role === 'operator' && (
+                            <Grid item xs={12} md={6}>
+                                <Card>
+                                    <CardContent>
+                                        <Typography variant="h6" gutterBottom>
+                                            Operator Scan
+                                        </Typography>
+                                        <Stack spacing={2}>
+                                            <TextField
+                                                label="Bundle Code"
+                                                value={bundleCode}
+                                                onChange={(event) => setBundleCode(event.target.value)}
+                                                fullWidth
+                                                disabled={scanLoading}
+                                            />
+                                            <Button
+                                                variant="contained"
+                                                onClick={handleOperatorScan}
+                                                disabled={scanLoading || !bundleCode.trim()}
+                                            >
+                                                {scanLoading ? 'Scanning…' : 'Scan and Advance'}
+                                            </Button>
+                                            {scanMessage && <Alert severity="success">{scanMessage}</Alert>}
+                                            {scanError && <Alert severity="error">{scanError}</Alert>}
+                                        </Stack>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        )}
                         <Grid item xs={12} md={6}>
                             <Card>
                                 <CardContent>

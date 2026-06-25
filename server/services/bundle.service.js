@@ -29,15 +29,29 @@ async function getBundles() {
     return Bundle.find().populate('style').sort({ createdAt: -1 });
 }
 
-async function advanceBundleStage(bundleId, operatorId) {
+async function getBundleByCode(bundleCode) {
+    return Bundle.findOne({ bundleCode }).populate('style');
+}
+
+async function advanceBundleStage(bundleId, operatorId, operatorRole) {
     const bundle = await Bundle.findById(bundleId);
     if (!bundle) {
-        throw new Error('Bundle not found');
+        const error = new Error('Bundle not found');
+        error.status = 404;
+        throw error;
     }
 
     const nextStage = NEXT_STAGE[bundle.currentStage];
     if (!nextStage) {
-        throw new Error('Bundle cannot be advanced from current stage');
+        const error = new Error('Bundle cannot be advanced from current stage');
+        error.status = 400;
+        throw error;
+    }
+
+    if (operatorRole === 'operator' && nextStage === 'Dispatch') {
+        const error = new Error('Operators can advance bundles only up to Factory Store. Dispatch must be handled by a manager.');
+        error.status = 403;
+        throw error;
     }
 
     const fromStage = bundle.currentStage;
@@ -54,4 +68,4 @@ async function advanceBundleStage(bundleId, operatorId) {
     return bundle;
 }
 
-module.exports = { createBundle, getBundles, advanceBundleStage };
+module.exports = { createBundle, getBundles, getBundleByCode, advanceBundleStage };

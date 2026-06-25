@@ -23,18 +23,27 @@ export default function DashboardLayout({ children }) {
                         <Button component={Link} to="/dashboard" color="inherit">
                             Dashboard
                         </Button>
-                        <Button component={Link} to="/styles" color="inherit">
-                            Styles
-                        </Button>
-                        <Button component={Link} to="/bundles" color="inherit">
-                            Bundles
-                        </Button>
-                        <Button component={Link} to="/stock" color="inherit">
-                            Stock
-                        </Button>
-                        <Button component={Link} to="/history" color="inherit">
-                            History
-                        </Button>
+                        {user?.role !== 'operator' && (
+                            <>
+                                <Button component={Link} to="/styles" color="inherit">
+                                    Styles
+                                </Button>
+                                <Button component={Link} to="/bundles" color="inherit">
+                                    Bundles
+                                </Button>
+                                <Button component={Link} to="/stock" color="inherit">
+                                    Stock
+                                </Button>
+                                <Button component={Link} to="/history" color="inherit">
+                                    History
+                                </Button>
+                            </>
+                        )}
+                        {user?.role === 'operator' && (
+                            <Button component={Link} to="/operator" color="inherit">
+                                Operator Scan
+                            </Button>
+                        )}
                         <Box sx={{ flexGrow: 1 }} />
                         <Typography sx={{ mr: 2 }}>{user?.name}</Typography>
                         <Button variant="outlined" color="inherit" onClick={handleLogout}>

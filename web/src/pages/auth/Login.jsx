@@ -23,7 +23,8 @@ export default function Login() {
 
     useEffect(() => {
         if (user) {
-            navigate('/dashboard');
+            const route = user.role === 'operator' ? '/operator' : '/dashboard';
+            navigate(route);
         }
     }, [user, navigate]);
 
@@ -40,7 +41,8 @@ export default function Login() {
         try {
             const result = await loginRequest({ email, password });
             login({ user: result.user, token: result.token });
-            navigate('/dashboard');
+            const route = result.user.role === 'operator' ? '/operator' : '/dashboard';
+            navigate(route);
         } catch (err) {
             setError(err?.response?.data?.message || 'Invalid credentials or server error');
         } finally {

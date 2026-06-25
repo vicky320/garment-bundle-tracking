@@ -8,6 +8,7 @@ import BundleList from '../pages/bundles/BundleList.jsx';
 import CreateBundle from '../pages/bundles/CreateBundle.jsx';
 import Stock from '../pages/stock/Stock.jsx';
 import StageHistory from '../pages/history/StageHistory.jsx';
+import OperatorScan from '../pages/operator/OperatorScan.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
 import DashboardLayout from '../layouts/DashboardLayout.jsx';
 
@@ -92,6 +93,16 @@ export default function AppRoutes() {
                         <ProtectedRoute>
                             <DashboardLayout>
                                 <StageHistory />
+                            </DashboardLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/operator"
+                    element={
+                        <ProtectedRoute>
+                            <DashboardLayout>
+                                <OperatorScan />
                             </DashboardLayout>
                         </ProtectedRoute>
                     }
